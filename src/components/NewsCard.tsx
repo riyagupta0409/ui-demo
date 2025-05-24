@@ -77,19 +77,19 @@ const NewsCard: React.FC<NewsCardProps> = ({
   return (
     <div 
       onClick={onClick} 
-      className="ott-card flex flex-col cursor-pointer"
+      className="ott-card flex flex-col cursor-pointer h-full"
     >
-      <div className="h-40">
+      <div className="h-48 relative overflow-hidden">
         <img 
           src={news.image} 
           alt={news.headline} 
-          className="w-full h-full object-cover" 
+          className="w-full h-full object-cover rounded-md" 
         />
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-md font-semibold line-clamp-2 text-white">{news.headline}</h3>
-        <p className="text-sm text-gray-400 line-clamp-2 mt-2">{news.summary}</p>
-        <div className="mt-2 flex items-center justify-between">
+        <p className="text-sm text-gray-400 line-clamp-3 mt-2 flex-grow">{news.summary}</p>
+        <div className="mt-3 flex items-center justify-between">
           <span className="text-xs text-gray-500">{news.source}</span>
           <span className="text-xs text-gray-500">{formatDate(news.date)}</span>
         </div>

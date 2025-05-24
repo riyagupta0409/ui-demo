@@ -5,7 +5,9 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NewsCard from '@/components/NewsCard';
 import VideoCard from '@/components/VideoCard';
+import MiniVideoPlayer from '@/components/MiniVideoPlayer';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
+// News summary is now a separate page
 import { 
   getTopicById, 
   getNewsForTopic, 
@@ -26,6 +28,8 @@ const SplitDetail = () => {
   const [selectedVideo, setSelectedVideo] = useState<VideoCardType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  // No longer needed as we're using navigation instead of a modal
+  
   useEffect(() => {
     if (id) {
       const topicData = getTopicById(id);
@@ -43,6 +47,10 @@ const SplitDetail = () => {
   const handleVideoClick = (video: VideoCardType) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
+  };
+
+  const handleNewsClick = (news: NewsCardType) => {
+    navigate(`/news/${news.id}`);
   };
 
   if (!topic) {
@@ -159,28 +167,30 @@ const SplitDetail = () => {
       </div>
       
       {/* Split Content Section */}
-      <section className="py-8 px-6">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* News Column */}
-            <div>
+      <section className="py-10 px-6">
+        <div className="max-w-[1800px] w-full mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+            {/* News Column - 40% */}
+            <div className="lg:col-span-2">
               <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Latest News</h2>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-8">
                 {news.map((item) => (
-                  <NewsCard key={item.id} news={item} onClick={() => {}} />
+                  <NewsCard key={item.id} news={item} onClick={() => handleNewsClick(item)} />
                 ))}
               </div>
             </div>
             
-            {/* Videos Column - Changed from grid-cols-2 to grid-cols-1 */}
-            <div>
+            {/* Videos Column - 60% - Using MiniVideoPlayer with auto-preview */}
+            <div className="lg:col-span-3">
               <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Related Videos</h2>
-              <div className="grid grid-cols-1 gap-6">
-                {videos.map((item) => (
-                  <VideoCard 
+              <div className="grid grid-cols-1 gap-8">
+                {videos.map((item, index) => (
+                  <MiniVideoPlayer
                     key={item.id} 
                     video={item} 
-                    onClick={() => handleVideoClick(item)} 
+                    onClick={() => handleVideoClick(item)}
+                    autoplay={true}
+                    delay={0} // No delay needed with intersection observer
                   />
                 ))}
               </div>
@@ -190,13 +200,18 @@ const SplitDetail = () => {
       </section>
       
       {/* Video Player Modal */}
-      <VideoPlayerModal
-        video={selectedVideo}
-        relatedVideos={videos.filter(v => v.id !== selectedVideo?.id)}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onRelatedVideoClick={handleVideoClick}
-      />
+      {selectedVideo && (
+        <VideoPlayerModal
+          video={selectedVideo}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          relatedVideos={videos.filter(v => v.id !== selectedVideo.id)}
+          onRelatedVideoClick={(video) => handleVideoClick(video)}
+          layout="split"
+        />
+      )}
+      
+      {/* News Summary is now a separate page */}
     </div>
   );
 };

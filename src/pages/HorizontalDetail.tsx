@@ -274,6 +274,7 @@ const HorizontalDetail = () => {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onRelatedVideoClick={handleVideoClick}
+        layout="horizontal"
       />
     </div>
   );

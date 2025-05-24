@@ -1,9 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { VideoCard as VideoCardType } from '@/data/mockData';
 import VideoCard from './VideoCard';
+import MiniVideoPlayer from './MiniVideoPlayer';
 import { ScrollArea } from './ui/scroll-area';
 
 interface VideoPlayerModalProps {
@@ -12,6 +13,7 @@ interface VideoPlayerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRelatedVideoClick: (video: VideoCardType) => void;
+  layout?: 'split' | 'horizontal';
 }
 
 const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({ 
@@ -19,14 +21,15 @@ const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
   relatedVideos,
   open, 
   onOpenChange,
-  onRelatedVideoClick
+  onRelatedVideoClick,
+  layout = 'split'
 }) => {
   if (!video) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[900px] p-0 bg-ott-dark border-ott-secondary">
-        <div className="flex flex-col h-full max-h-[80vh]">
+      <DialogContent className="sm:max-w-[900px] p-0 bg-ott-dark border-ott-secondary overflow-hidden">
+        <div className="flex flex-col h-full max-h-[80vh] w-full">
           {/* Video player section */}
           <div className="relative pt-[56.25%] w-full">
             <iframe
@@ -55,21 +58,35 @@ const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
             </div>
           </div>
           
-          {/* Related videos section - Horizontal */}
+          {/* Related videos section */}
           <div className="p-4 pt-0">
             <h4 className="text-md font-semibold mb-3 text-white">Related Videos</h4>
-            <div className="overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              <div className="flex gap-4">
-                {relatedVideos.slice(0, 6).map((relatedVideo) => (
-                  <div key={relatedVideo.id} className="flex-shrink-0" style={{ width: '220px' }}>
-                    <VideoCard 
-                      video={relatedVideo}
-                      onClick={() => onRelatedVideoClick(relatedVideo)}
-                    />
-                  </div>
+            {layout === 'split' ? (
+              <div className="space-y-4">
+                {relatedVideos.slice(0, 6).map((relatedVideo, index) => (
+                  <MiniVideoPlayer
+                    key={relatedVideo.id}
+                    video={relatedVideo}
+                    onClick={() => onRelatedVideoClick(relatedVideo)}
+                    autoplay={true} // Autoplay all videos
+                    delay={0} // No delay needed with intersection observer
+                  />
                 ))}
               </div>
-            </div>
+            ) : (
+              <ScrollArea className="w-full max-w-full">
+                <div className="flex gap-4 pb-4 pr-4">
+                  {relatedVideos.slice(0, 6).map((relatedVideo) => (
+                    <div key={relatedVideo.id} className="flex-shrink-0" style={{ width: '200px' }}>
+                      <VideoCard 
+                        video={relatedVideo}
+                        onClick={() => onRelatedVideoClick(relatedVideo)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
           </div>
         </div>
       </DialogContent>
