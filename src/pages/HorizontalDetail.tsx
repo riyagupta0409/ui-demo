@@ -4,8 +4,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NewsCard from '@/components/NewsCard';
-import VideoCard from '@/components/VideoCard';
 import ContentCard from '@/components/ContentCard';
+import MiniVideoPlayer from '@/components/MiniVideoPlayer';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
 import { 
   getTopicById, 
@@ -51,6 +51,10 @@ const HorizontalDetail = () => {
   const handleVideoClick = (video: VideoCardType) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
+  };
+
+  const handleNewsClick = (news: NewsCardType) => {
+    navigate(`/news/${news.id}`);
   };
 
   // Simulated infinite scroll for videos
@@ -219,7 +223,7 @@ const HorizontalDetail = () => {
                 <NewsCard 
                   key={item.id} 
                   news={item} 
-                  onClick={() => {}} 
+                  onClick={() => handleNewsClick(item)} 
                   variant="horizontal"
                 />
               ))}
@@ -236,10 +240,15 @@ const HorizontalDetail = () => {
             >
               {videos.map((item) => (
                 <div key={item.id} className="flex-shrink-0" style={{ width: '280px' }}>
-                  <VideoCard 
-                    video={item} 
-                    onClick={() => handleVideoClick(item)} 
-                  />
+                  <div className="mini-player-container" style={{ height: '180px' }}>
+                    <MiniVideoPlayer 
+                      video={item} 
+                      onClick={() => handleVideoClick(item)}
+                      autoplay={true}
+                      delay={0}
+                      variant="compact"
+                    />
+                  </div>
                 </div>
               ))}
               {loading && (

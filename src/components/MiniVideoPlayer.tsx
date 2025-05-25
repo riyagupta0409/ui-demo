@@ -7,13 +7,15 @@ interface MiniVideoPlayerProps {
   onClick: () => void;
   autoplay?: boolean;
   delay?: number;
+  variant?: 'default' | 'compact';
 }
 
 const MiniVideoPlayer: React.FC<MiniVideoPlayerProps> = ({ 
   video, 
   onClick,
   autoplay = true,
-  delay = 0
+  delay = 0,
+  variant = 'default'
 }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -82,7 +84,7 @@ const MiniVideoPlayer: React.FC<MiniVideoPlayerProps> = ({
       className="ott-card flex flex-col cursor-pointer group relative"
       onClick={onClick}
     >
-      <div className="h-80 relative overflow-hidden bg-black rounded-md">
+      <div className={`${variant === 'compact' ? 'h-40' : 'h-80'} relative overflow-hidden bg-black rounded-md`}>
         {/* Only load and play video when visible and playing state is true */}
         <iframe
           ref={playerRef}
